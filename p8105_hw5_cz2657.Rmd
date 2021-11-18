@@ -129,17 +129,43 @@ homicide_df %>%
 
 ## Problem 2
 
-```{r}
-tibble(
-  list.files("data/data/"))
+```{r, message = FALSE, warning=FALSE}
+importcsv = function(filename) {
+  
+  x = str_c("data/data/", filename)
+  data = read_csv(x)
+  
+  return(data)
+}
+
+importcsv("con_01.csv")
+
+prob2_df = 
+  tibble(
+  name = list.files("data/data/"), 
+  data = purrr::map(name, importcsv))
+
+full_data_2 = 
+  prob2_df %>% 
+    separate(name, c("treatment_arm", "id")) %>% 
+  mutate(id = as.numeric(id), 
+         treatment_arm = as.factor(treatment_arm)) %>% 
+    unnest(data) %>% 
+  pivot_longer(
+    week_1:week_8, 
+    names_to = "week", 
+    names_prefix = "week_"
+  ) %>% 
+  mutate(id = ifelse(treatment_arm == "exp", id, id+10))
+
+full_data_2 %>% 
+  ggplot(aes(x = week, y = value, group = id, color = treatment_arm)) +
+  geom_line() +
+  labs(x = "Week", y = "Value") + 
+  scale_color_discrete(name = "Trial Arm", labels = c("Control", "Experimental"))
 ```
 
-
-each data set is a subject with 
-
-use something like a function to iterate across ecah of these to read_csv across each file; then, you end up with a dataset with a column of data; then unnest and have all the columns that i need to have; 
-
-then you need to tidy that result (get a control arm and an experimental arm, its in wide format instead of long format, you need a unique ID, then you get a dataset that you can use to create a spaghetti plot)
+Based on the spaghetti pot, it appears that those in the experimental arm tend to have higher values than those in the control arm by the end of week 8; however, values appeared much closer together at the beginning of the trial period (meaning week 1). If the goal of the treatment was to increase the values, it appears that the treatment was effective. 
 
 ## Problem 3 
 ```{r}
@@ -175,6 +201,7 @@ fill_in_missing = function(vector) {
  then if you have this written, I would check that it fills in the way that it needs to
  
  Where the mapping piece comes in, I would start at the first column and map across each of the columns and update each of the columns within the dataframe and then put it back together as a dataframe 
+
 
 
 
