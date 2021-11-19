@@ -27,7 +27,7 @@ scale_fill_discrete = scale_fill_viridis_d
 
 ## Problem 1
 
-```{r}
+```{r, message = FALSE}
 homicide_df = 
   read_csv("data/homicide-data.csv", na = c("", "Unknown")) %>% 
   mutate(city_state = str_c(city, state), resolution = case_when(
@@ -40,7 +40,7 @@ homicide_df =
 
 Focusing on Baltimore, MD: 
 
-```{r}
+```{r, message = FALSE}
 baltimiore_df = 
   homicide_df %>% 
   filter(city_state == "BaltimoreMD")
@@ -59,9 +59,9 @@ baltimore_test %>%
   broom::tidy()
 ```
 
-Let's get those estimates across all cities 
+Getting the estimates across all cities 
 
-```{r}
+```{r, message = FALSE}
 prop_test_function = function(city_df) {
   
   city_summary = 
@@ -85,7 +85,7 @@ homicide_df %>%
   prop_test_function()
 ```
 
-```{r}
+```{r, message = FALSE}
 results_df = 
   homicide_df %>% 
   nest(data = uid:resolution) %>% 
@@ -100,7 +100,7 @@ results_df =
 
 Plot estimates and confidence intervals 
 
-```{r}
+```{r, message = FALSE}
 results_df %>% 
   mutate(city_state = fct_reorder(city_state, estimate)) %>% 
   ggplot(aes(x = city_state, y = estimate)) + 
@@ -111,7 +111,7 @@ results_df %>%
 
 Other approach: 
 
-```{r}
+```{r, message = FALSE}
 homicide_df %>% 
   group_by(city_state) %>% 
   summarize(
@@ -143,7 +143,7 @@ importcsv("con_01.csv")
 prob2_df = 
   tibble(
   name = list.files("data/data/"), 
-  data = purrr::map(name, importcsv))
+  data = map(name, importcsv))
 
 full_data_2 = 
   prob2_df %>% 
@@ -178,7 +178,7 @@ iris_with_missing = iris %>%
   mutate(Species = as.character(Species))
 ```
 
-Write a function 
+Function to fill in missing:: 
 
 ```{r}
 fill_missing = function(x) {
