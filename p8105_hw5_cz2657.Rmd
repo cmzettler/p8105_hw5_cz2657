@@ -181,26 +181,55 @@ iris_with_missing = iris %>%
 Write a function 
 
 ```{r}
-fill_in_missing = function(vector) {
+fill_missing = function(x) {
   
-  if (is.numeric) {
+  if(is.character(x)) {
     
+    x[is.na(x)] = "virginica"
+  
+    }
+  
+  if(is.numeric(x)) {
+    
+    x[is.na(x)] = mean(x, na.rm = TRUE)
     
   }
   
-  if(is.character) {
-    
-    
+    if(!is.character(x) & !is.numeric(x)){
+    stop("vector is not numeric or character")
   }
   
+  
+  return(x)
   
 }
+
+fill_missing(iris_with_missing$Sepal.Length)
+fill_missing(iris_with_missing$Sepal.Width)
+fill_missing(iris_with_missing$Petal.Length)
+fill_missing(iris_with_missing$Petal.Width)
+fill_missing(iris_with_missing$Species)
+
+iris_filled = 
+  iris_with_missing %>% 
+  map_df(fill_missing) 
+
+sum(is.na(iris_with_missing$Sepal.Length))
+sum(is.na(iris_filled$Sepal.Length))
+
+sum(is.na(iris_with_missing$Sepal.Width))
+sum(is.na(iris_filled$Sepal.Width))
+
+sum(is.na(iris_with_missing$Petal.Length))
+sum(is.na(iris_filled$Petal.Length))
+
+sum(is.na(iris_with_missing$Petal.Width))
+sum(is.na(iris_filled$Petal.Width))
+
+sum(is.na(iris_with_missing$Species))
+sum(is.na(iris_filled$Species))
+
 ```
- if neither of those things, then spit out a warning message; 
- 
- then if you have this written, I would check that it fills in the way that it needs to
- 
- Where the mapping piece comes in, I would start at the first column and map across each of the columns and update each of the columns within the dataframe and then put it back together as a dataframe 
 
 
 
